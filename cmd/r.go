@@ -24,27 +24,30 @@ import (
 var rCmd = &cobra.Command{
 	Use:   "r",
 	Short: "register",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("r called")
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+		email, _ := cmd.Flags().GetString("email")
+		phone, _ := cmd.Flags().GetString("phone")
+		if username == "" {
+			fmt.Println("Username is empty.")
+		}
+		if password == "" {
+			fmt.Println("Password is empty.")
+		}
+		if email == "" {
+			fmt.Println("Email is empty.")
+		}
+		if phone == "" {
+			fmt.Println("Phone is empty.")
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(rCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// rCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// rCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rCmd.Flags().StringP("username", "u", "", "username")
+	rCmd.Flags().StringP("password", "p", "", "password")
+	rCmd.Flags().StringP("email", "e", "", "email")
+	rCmd.Flags().StringP("phone", "p", "", "phone")
 }
