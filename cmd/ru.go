@@ -20,30 +20,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// dmCmd represents the dm command
-var dmCmd = &cobra.Command{
-	Use:   "dm",
-	Short: "delete a meeting",
+// ruCmd represents the ru command
+var ruCmd = &cobra.Command{
+	Use:   "ru",
+	Short: "remove user(s) from a meeting",
 	Run: func(cmd *cobra.Command, args []string) {
-		errLog.Println("Delete Meeting called")
+		errLog.Println("Remove Participator called")
 		title, _ := cmd.Flags().GetString("title")
-		if title == "" {
-			fmt.Println("Error: Please input meeting title")
+		users, _ := cmd.Flags().GetStringSlice("user")
+		if title == "" || len(users) == 0 {
+			fmt.Println("Please input title and user(s) (input like \"name1, name2\")")
 			return
 		}
-		if user,flag := service.GetCurUser(); flag != true {
+		if user, flag := service.GetCurUser(); flag != true {
 			fmt.Println("Error: please login")
 		} else {
-			if c := service.DeleteMeeting(user.Name, title); c == 0 {
-				fmt.Println("Error: Meeting not exist or you're not a Sponsor of it")
+			flag := service.RemoveMeetingParticipator(user.Name, title, users)
+			if flag != true {
+				fmt.Println("Error! Check error.log for detail")
 			} else {
-				fmt.Println("Delete Successfully")
+				fmt.Println("Remove successfully")
 			}
 		}
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(dmCmd)
-	dmCmd.Flags().StringP("title", "t","", "the title of meeting")
+	rootCmd.AddCommand(ruCmd)
+	ruCmd.Flags().StringP("title", "t", "", "the title of the meeting")
+	ruCmd.Flags().StringSliceP("user", "u", nil, "the user(s) in a meeting, input like \"name1, name2\"")
 }

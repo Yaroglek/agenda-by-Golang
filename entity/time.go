@@ -5,56 +5,56 @@ import (
 )
 
 type Time struct {
-	year, month, day, hour, minute int
+	Year, Month, Day, Hour, Minute int
 }
 
-func (time Time) isValidTime() bool {
-	if time.year < 0 {
+func (time Time) IsValidTime() bool {
+	if time.Year < 0 {
 		return false
 	}
-	if time.month < 1 || time.month > 12 {
+	if time.Month < 1 || time.Month > 12 {
 		return false
 	}
-	if time.day < 1 {
+	if time.Day < 1 {
 		return false
 	}
-	if (time.month == 1 || time.month == 3 || time.month == 5 || time.month == 7 || time.month == 8 || time.month == 10 || time.month == 12) && time.day > 31 {
+	if (time.Month == 1 || time.Month == 3 || time.Month == 5 || time.Month == 7 || time.Month == 8 || time.Month == 10 || time.Month == 12) && time.Day > 31 {
 		return false
 	}
-	if (time.month == 4 || time.month == 6 || time.month == 9 || time.month == 11) && time.day > 30 {
+	if (time.Month == 4 || time.Month == 6 || time.Month == 9 || time.Month == 11) && time.Day > 30 {
 		return false
 	}
-	if time.month == 2 {
-		if time.year % 4 == 0 && (time.year % 400 == 0 || time.year % 100 != 0) {
-			if time.day > 29 {
+	if time.Month == 2 {
+		if time.Year % 4 == 0 && (time.Year % 400 == 0 || time.Year % 100 != 0) {
+			if time.Day > 29 {
 				return false
 			}
 		} else {
-			if time.day > 28 {
+			if time.Day > 28 {
 				return false
 			}
 		}
 	}
-	if time.hour < 0 || time.hour > 23 {
+	if time.Hour < 0 || time.Hour > 23 {
 		return false
 	}
-	if time.minute < 0 || time.minute > 59 {
+	if time.Minute < 0 || time.Minute > 59 {
 		return false
 	}
 	return true;
 }
 
-func stringToTime(str string) Time {
+func StringToTime(str string) Time {
 	if len(str) != 16 {
 		return Time{0, 0, 0, 0, 0}
 	}
-	if str[5] != '-' || str[8] != '-' || str[11] != '/' || str[14] != ':' {
+	if str[4] != '-' || str[7] != '-' || str[10] != '/' || str[13] != ':' {
 		return Time{0, 0, 0, 0, 0}
 	}
-	return Time{stringToInt(str[0:4]), stringToInt(str[5:7]), stringToInt(str[8:10]), stringToInt(str[11:13]), stringToInt(str[14:])}
+	return Time{StringToInt(str[0:4]), StringToInt(str[5:7]), StringToInt(str[8:10]), StringToInt(str[11:13]), StringToInt(str[14:])}
 }
 
-func stringToInt(str string) int {
+func StringToInt(str string) int {
 	sum := 0
 	for i := 0; i < len(str); i++ {
 		if str[i] < '0' || str[i] > '9' {
@@ -67,7 +67,7 @@ func stringToInt(str string) int {
 	return sum
 }
 
-func intToString(num int, size int) string {
+func IntToString(num int, size int) string {
 	str := ""
 	for ; len(str) < size; num /= 10 {
 		str = fmt.Sprintf("%d%s", num % 10, str)
@@ -75,28 +75,28 @@ func intToString(num int, size int) string {
 	return str
 }
 
-func (time Time) toString() string {
-	return fmt.Sprintf("%s%s%s%s%s%s%s%s%s", intToString(time.year, 4), "-", intToString(time.month, 2), "-", intToString(time.day, 2), "/", intToString(time.hour, 2), ":", intToString(time.minute, 2))
+func (time Time) ToString() string {
+	return fmt.Sprintf("%s%s%s%s%s%s%s%s%s", IntToString(time.Year, 4), "-", IntToString(time.Month, 2), "-", IntToString(time.Day, 2), "/", IntToString(time.Hour, 2), ":", IntToString(time.Minute, 2))
 }
 
-func (a Time) equal(b Time) bool {
-	return a.year == b.year && a.month == b.month && a.day == b.day && a.hour == b.hour && a.minute == b.minute
+func (a Time) Equal(b Time) bool {
+	return a.Year == b.Year && a.Month == b.Month && a.Day == b.Day && a.Hour == b.Hour && a.Minute == b.Minute
 }
 
-func (a Time) moreThan(b Time) bool {
-	if a.year > b.year {
+func (a Time) MoreThan(b Time) bool {
+	if a.Year > b.Year {
 		return true
-	} else if a.year == b.year {
-		if a.month > b.month {
+	} else if a.Year == b.Year {
+		if a.Month > b.Month {
 			return true
-		} else if a.month == b.month {
-			if a.day > b.day {
+		} else if a.Month == b.Month {
+			if a.Day > b.Day {
 				return true
-			} else if a.day == b.day {
-				if a.hour > b.hour {
+			} else if a.Day == b.Day {
+				if a.Hour > b.Hour {
 					return true
-				} else if a.hour == b.hour {
-					if a.minute > b.minute {
+				} else if a.Hour == b.Hour {
+					if a.Minute > b.Minute {
 						return true
 					} else {
 						return false
@@ -115,20 +115,20 @@ func (a Time) moreThan(b Time) bool {
 	}
 }
 
-func (a Time) lessThan(b Time) bool {
-	if a.year < b.year {
+func (a Time) LessThan(b Time) bool {
+	if a.Year < b.Year {
 		return true
-	} else if a.year == b.year {
-		if a.month < b.month {
+	} else if a.Year == b.Year {
+		if a.Month < b.Month {
 			return true
-		} else if a.month == b.month {
-			if a.day < b.day {
+		} else if a.Month == b.Month {
+			if a.Day < b.Day {
 				return true
-			} else if a.day == b.day {
-				if a.hour < b.hour {
+			} else if a.Day == b.Day {
+				if a.Hour < b.Hour {
 					return true
-				} else if a.hour == b.hour {
-					if a.minute < b.minute {
+				} else if a.Hour == b.Hour {
+					if a.Minute < b.Minute {
 						return true
 					} else {
 						return false

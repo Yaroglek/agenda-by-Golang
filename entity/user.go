@@ -1,5 +1,5 @@
 package entity
 
 type User struct {
-	name, password, email, phone string
+	Name, Password, Email, Phone string
 }

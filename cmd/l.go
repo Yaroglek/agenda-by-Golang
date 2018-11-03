@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -24,27 +24,29 @@ import (
 var lCmd = &cobra.Command{
 	Use:   "l",
 	Short: "login",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("l called")
+		errLog.Println("Login called")
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+		if username == "" || password == "" {
+			fmt.Println("Please input username and password")
+			return
+		}
+		if _, flag := service.GetCurUser(); flag == true {
+			fmt.Println("Error: please logout")
+			return
+		}
+		if tf := service.UserLogin(username, password); tf == true {
+			fmt.Println("Login Successfully. Current User: ", username)
+		} else {
+			fmt.Println("Login fail: Wrong username or password")
+		}
+		return
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(lCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// lCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// lCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	lCmd.Flags().StringP("username", "u", "", "agenda username")
+	lCmd.Flags().StringP("password", "p","","agenda password")
 }

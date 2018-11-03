@@ -16,35 +16,47 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
 // fmCmd represents the fm command
 var fmCmd = &cobra.Command{
 	Use:   "fm",
-	Short: "find a meeting",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "find meetings that are bewteen starttime and endtime",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("fm called")
+		errLog.Println("Query Meeting called")
+		starttime, _ := cmd.Flags().GetString("starttime")
+		endtime, _ := cmd.Flags().GetString("endtime")
+		if starttime == "" || endtime == "" {
+			fmt.Println("Please input start time and end time both")
+			return
+		}
+		if user, flag := service.GetCurUser(); flag != true {
+			fmt.Println("Error: please login")
+		} else {
+			if ml, flag := service.QueryMeeting(user.Name, starttime, endtime); flag != true {
+				fmt.Println("Error. Please input the date as yyyy-mm-dd/hh:mm and make sure that starttime is before endtime")
+			} else {
+				for _, m := range ml {
+					fmt.Println("----------------")
+					fmt.Println("Title:", m.Title)
+					fmt.Println("Start Time:", m.StartTime.ToString())
+					fmt.Println("End Time:", m.EndTime.ToString())
+					fmt.Printf("Participator(s): ")
+					for _, p := range m.Participators {
+						fmt.Printf("%s ", p)
+					}
+					fmt.Printf("\n")
+					fmt.Println("----------------")
+				}
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(fmCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// fmCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// fmCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	fmCmd.Flags().StringP("starttime", "s", "", "the start time of the meeting")
+	fmCmd.Flags().StringP("endtime", "e", "", "the end time of the meeting")
 }

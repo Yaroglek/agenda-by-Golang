@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log"
 	"encoding/json"
+	"agenda/logger"
 )
 
 type UserFilter func (*User) bool
@@ -15,7 +16,7 @@ type MeetingFilter func (*Meeting) bool
 
 var userinfoPath = "/src/agenda/data/user"
 var meetinginfoPath = "/src/agenda/data/meeting"
-var curUserPath = "/src/agenda/data/curUser.txt"
+var curUserPath = "/src/agenda/data/curUser"
 
 var curUsername *string;
 
@@ -27,35 +28,35 @@ var meetingData []Meeting
 var errLog *log.Logger
 
 func init()  {
-	errLog = loghelper.Error
+	errLog = logger.Error
 	dirty = false
-	userinfoPath = filepath.Join(loghelper.GoPath, userinfoPath)
-	meetinginfoPath = filepath.Join(loghelper.GoPath, meetinginfoPath)
-	curUserPath = filepath.Join(loghelper.GoPath, curUserPath)
-	if err := readFromFile(); err != nil {
+	userinfoPath = filepath.Join(logger.GoPath, userinfoPath)
+	meetinginfoPath = filepath.Join(logger.GoPath, meetinginfoPath)
+	curUserPath = filepath.Join(logger.GoPath, curUserPath)
+	if err := ReadFromFile(); err != nil {
 		errLog.Println("readFromFile fail: ", err)
 	}
 }
 
-func logout() error {
+func Logout() error {
 	curUsername = nil
-	return sync()
+	return Sync()
 }
 
-func sync() error {
-	if err := writeToFile(); err != nil {
+func Sync() error {
+	if err := WriteToFile(); err != nil {
 		errLog.Println("writeToFile fail:", err)
 		return err
 	}
 	return nil
 }
 
-func createUser(v User) {
-	userData = append(userData, v)
+func CreateUser(user *User) {
+	userData = append(userData, *user)
 	dirty = true
 }
 
-func queryUser(filter UserFilter) []User {
+func QueryUser(filter UserFilter) []User {
 	var user []User
 	for _, v := range userData {
 		if filter(&v) {
@@ -65,7 +66,7 @@ func queryUser(filter UserFilter) []User {
 	return user
 }
 
-func updateUser(filter UserFilter, switcher func (*User)) int {
+func UpdateUser(filter UserFilter, switcher func (*User)) int {
 	count := 0
 	for i := 0; i < len(userData); i++ {
 		if v := &userData[i]; filter(v) {
@@ -79,7 +80,7 @@ func updateUser(filter UserFilter, switcher func (*User)) int {
 	return count
 }
 
-func deleteUser(filter UserFilter) int {
+func DeleteUser(filter UserFilter) int {
 	count := 0
 	length := len(userData)
 	for i := 0; i < length; {
@@ -98,12 +99,12 @@ func deleteUser(filter UserFilter) int {
 	return count
 }
 
-func createMeeting(v Meeting) {
-	meetingData = append(meetingData, v)
+func CreateMeeting(meeting *Meeting) {
+	meetingData = append(meetingData, *meeting)
 	dirty = true
 }
 
-func queryMeeting(filter MeetingFilter) (meeting []Meeting) {
+func QueryMeeting(filter MeetingFilter) (meeting []Meeting) {
 	for _, v := range meetingData {
 		if filter(&v) {
 			meeting = append(meeting, v)
@@ -112,7 +113,7 @@ func queryMeeting(filter MeetingFilter) (meeting []Meeting) {
 	return meeting;
 }
 
-func updateMeeting(filter MeetingFilter, switcher func (*Meeting)) int {
+func UpdateMeeting(filter MeetingFilter, switcher func (*Meeting)) int {
 	count := 0
 	for i := 0; i < len(meetingData); i++ {
 		if v := &meetingData[i]; filter(v) {
@@ -126,7 +127,7 @@ func updateMeeting(filter MeetingFilter, switcher func (*Meeting)) int {
 	return count
 }
 
-func deleteMeeting(filter MeetingFilter) int {
+func DeleteMeeting(filter MeetingFilter) int {
 	count := 0
 	length := len(meetingData)
 	for i := 0; i < length; {
@@ -145,42 +146,42 @@ func deleteMeeting(filter MeetingFilter) int {
 	return count
 }
 
-func getCurUser() (User, error) {
+func GetCurUser() (User, error) {
 	if curUsername == nil {
 		return User{}, errors.New("Current user does not exist")
 	}
 	for _ , v := range userData {
-		if v.name == *curUsername {
+		if v.Name == *curUsername {
 			return v, nil
 		}
 	}
 	return User{}, errors.New("Current user does not exist")
 }
 
-func setCurUser(u *User) {
+func SetCurUser(u *User) {
 	if u == nil {
 		curUsername = nil
 		return
 	}
 	if (curUsername == nil) {
-		p := u.name
+		p := u.Name
 		curUsername = &p
 	} else {
-		*curUsername = u.name
+		*curUsername = u.Name
 	}
 }
 
-func readFromFile() error {
+func ReadFromFile() error {
 	var e []error
-	str, err1 := readString(curUserPath)
+	str, err1 := ReadString(curUserPath)
 	if err1 != nil {
 		e = append(e, err1)
 	}
 	curUsername = str
-	if err := readUser(); err != nil {
+	if err := ReadUser(); err != nil {
 		e = append(e, err)
 	}
-	if err := readMeeting(); err != nil {
+	if err := ReadMeeting(); err != nil {
 		e = append(e, err)
 	}
 	if len(e) == 0 {
@@ -193,16 +194,16 @@ func readFromFile() error {
 	return result
 }
 
-func writeToFile() error {
+func WriteToFile() error {
 	var e []error
-	if err := writeString(curUserPath, curUsername); err != nil {
+	if err := WriteString(curUserPath, curUsername); err != nil {
 		e = append(e, err)
 	}
 	if dirty {
-		if err := writeJSON(userinfoPath, userData); err != nil {
+		if err := WriteJSON(userinfoPath, userData); err != nil {
 			e = append(e, err)
 		}
-		if err := writeJSON(meetinginfoPath, meetingData); err != nil {
+		if err := WriteJSON(meetinginfoPath, meetingData); err != nil {
 			e = append(e, err)
 		}
 	}
@@ -216,7 +217,7 @@ func writeToFile() error {
 	return result
 }
 
-func readUser() error {
+func ReadUser() error {
 	file, err := os.Open(userinfoPath);
 	if err != nil {
 		errLog.Println("Open File Fail: ", userinfoPath, err)
@@ -234,7 +235,7 @@ func readUser() error {
 	}
 }
 
-func readMeeting() error {
+func ReadMeeting() error {
 	file, err := os.Open(meetinginfoPath);
 	if err != nil {
 		errLog.Println("Open File Fail:", meetinginfoPath, err)
@@ -251,7 +252,7 @@ func readMeeting() error {
 	}
 }
 
-func writeJSON(fpath string, data interface{}) error {
+func WriteJSON(fpath string, data interface{}) error {
 	file, err := os.Create(fpath);
 	if err != nil {
 		return err
@@ -265,38 +266,38 @@ func writeJSON(fpath string, data interface{}) error {
 	return nil
 }
 
-func writeString(path string, data *string) error {
+func WriteString(path string, data *string) error {
 	file, err := os.Create(path)
 	if err != nil {
-		loghelper.Error.Println("Create file error: ", path)
+		logger.Error.Println("Create file error: ", path)
 		return err
 	}
 	defer file.Close()
 	writer := bufio.NewWriter(file)
 	if data != nil {
 		if _, err := writer.WriteString(*data); err != nil {
-			loghelper.Error.Println("Write file fail:", path)
+			logger.Error.Println("Write file fail:", path)
 			return err
 		}
 	}
 	if err := writer.Flush(); err != nil {
-		loghelper.Error.Println("Flush file fail:", path)
+		logger.Error.Println("Flush file fail:", path)
 		return err
 	}
 	return nil
 }
 
-func readString(path string) (*string, error) {
+func ReadString(path string) (*string, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		loghelper.Error.Println("Open file error:", path)
+		logger.Error.Println("Open file error:", path)
 		return nil, err
 	}
 	defer file.Close()
 	reader := bufio.NewReader(file)
 	str, err := reader.ReadString('\n');
 	if err != nil && err != io.EOF {
-		loghelper.Error.Println("Read file fail:", path)
+		logger.Error.Println("Read file fail:", path)
 		return nil, err
 	}
 	return &str, nil

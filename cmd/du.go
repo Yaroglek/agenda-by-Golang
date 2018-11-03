@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -24,27 +24,20 @@ import (
 var duCmd = &cobra.Command{
 	Use:   "du",
 	Short: "delete a user",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("du called")
+		errLog.Println("Delete User called")
+		if user,flag := service.GetCurUser(); flag != true {
+			fmt.Println("Error: please login")
+		} else {
+			if dflag := service.DeleteUser(user.Name); dflag != true {
+				fmt.Println("Error! Please check error.log")
+			} else {
+				fmt.Println("Delete Sucessfully")
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(duCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// duCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// duCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,33 +1,33 @@
 package entity
 
 type Meeting struct {
-	title string
-	sponsor string
-	participators []string
-	startTime, endTime Time
+	Title string
+	Sponsor string
+	Participators []string
+	StartTime, EndTime Time
 }
 
-func (meeting Meeting) isParticipator(username string) bool {
-	for i := 0; i < len(meeting.participators); i++ {
-		if meeting.participators[i] == username {
+func (meeting Meeting) IsParticipator(username string) bool {
+	for i := 0; i < len(meeting.Participators); i++ {
+		if meeting.Participators[i] == username {
 	    	return true
 		}
 	}
 	return false
 }
 
-func (meeting *Meeting) addParticipator(username string) bool {
-	if meeting.sponsor == username || meeting.isParticipator(username) {
+func (meeting *Meeting) AddParticipator(username string) bool {
+	if meeting.Sponsor == username || meeting.IsParticipator(username) {
 		return false
 	}
-	meeting.participators = append(meeting.participators, username)
+	meeting.Participators = append(meeting.Participators, username)
 	return true
 }
 
-func (meeting *Meeting) deleteParticipator(username string) {
-	for i := 0; i < len(meeting.participators); i++ {
-		if meeting.participators[i] == username {
-			meeting.participators = append(meeting.participators[:i], meeting.participators[i + 1 :]...)
+func (meeting *Meeting) DeleteParticipator(username string) {
+	for i := 0; i < len(meeting.Participators); i++ {
+		if meeting.Participators[i] == username {
+			meeting.Participators = append(meeting.Participators[:i], meeting.Participators[i + 1 :]...)
 		}
 	}
 }

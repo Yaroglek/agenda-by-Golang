@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -24,27 +24,34 @@ import (
 var cmCmd = &cobra.Command{
 	Use:   "cm",
 	Short: "create a meeting",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cm called")
+		errLog.Println("Create Meeting Called")
+		title, _ := cmd.Flags().GetString("title")
+		participator, _ := cmd.Flags().GetStringSlice("user")
+		starttime, _ := cmd.Flags().GetString("starttime")
+		endtime, _ := cmd.Flags().GetString("endtime")
+		if title == "" || len(participator) == 0 || starttime == "" || endtime == "" {
+			fmt.Println("Please input title, starttime[yyyy-mm-dd/hh:mm], endtime, user(s)(input like \"name1, name2\")")
+			return
+		}
+		if user, flag := service.GetCurUser(); flag != true {
+			fmt.Println("Error: please login")
+			return
+		} else {
+			if flag := service.CreateMeeting(user.Name, title, starttime, endtime, participator); flag != true {
+				fmt.Println("Error: create Failed. Please check error.log for more detail")
+				return
+			} else {
+				fmt.Println("Create meeting successfully!")
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cmCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cmCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cmCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cmCmd.Flags().StringP("title", "t", "", "the title of meeting")
+	cmCmd.Flags().StringSliceP("user", "u", nil, "the user(s) of the meeting, input like \"name1, name2\"")
+	cmCmd.Flags().StringP("starttime","s","","the startTime of the meeting")
+	cmCmd.Flags().StringP("endtime", "e", "", "the endTime of the meeting")
 }

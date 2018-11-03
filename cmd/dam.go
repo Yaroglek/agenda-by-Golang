@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -24,27 +24,21 @@ import (
 var damCmd = &cobra.Command{
 	Use:   "dam",
 	Short: "delete all meetings",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dam called")
+		errLog.Println("Delete all Meeting called")
+		if user, flag := service.GetCurUser(); flag != true {
+			fmt.Println("Error: please login")
+		} else {
+			cm,flag := service.ClearMeeting(user.Name)
+			if flag == true {
+				fmt.Println("Successfully deleted ", cm," meeting(s)")
+			} else {
+				fmt.Println("DeleteAllMeeting failed. Check error.log")
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(damCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// damCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// damCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

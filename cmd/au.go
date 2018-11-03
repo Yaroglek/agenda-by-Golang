@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -24,27 +24,29 @@ import (
 var auCmd = &cobra.Command{
 	Use:   "au",
 	Short: "add a user to a meeting",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("au called")
+		errLog.Println("Add User called")
+		tmp_p, _ := cmd.Flags().GetStringSlice("user")
+		tmp_t, _ := cmd.Flags().GetString("title")
+		if len(tmp_p) == 0 || tmp_t == "" {
+			fmt.Println("Please input title and user(s)(input like \"name1, name2\")")
+			return
+		}
+		if user, flag := service.GetCurUser(); flag != true {
+			fmt.Println("Error: please login")
+		} else {
+			flag := service.AddMeetingParticipator(user.Name, tmp_t, tmp_p)
+			if flag != true {
+				fmt.Println("Unexpected error. Check error.log for detail")
+			} else {
+				fmt.Println("Successfully add")
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(auCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// auCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// auCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	auCmd.Flags().StringSliceP("user", "u", nil, "user(s) you want to add, input like \"name1, name2\"")
+	auCmd.Flags().StringP("title", "t", "", "the title of meeting")
 }

@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"agenda/service"
 	"github.com/spf13/cobra"
 )
 
@@ -25,21 +25,26 @@ var rCmd = &cobra.Command{
 	Use:   "r",
 	Short: "register",
 	Run: func(cmd *cobra.Command, args []string) {
+		errLog.Println("Register called")
 		username, _ := cmd.Flags().GetString("username")
 		password, _ := cmd.Flags().GetString("password")
 		email, _ := cmd.Flags().GetString("email")
-		phone, _ := cmd.Flags().GetString("phone")
-		if username == "" {
-			fmt.Println("Username is empty.")
+		phone, _ := cmd.Flags().GetString("cellphone")
+		if username == "" || password == "" || email == "" || phone == "" {
+			fmt.Println("Error: some information has not been input")
+			return
 		}
-		if password == "" {
-			fmt.Println("Password is empty.")
-		}
-		if email == "" {
-			fmt.Println("Email is empty.")
-		}
-		if phone == "" {
-			fmt.Println("Phone is empty.")
+		pass, err := service.UserRegister(username, password, email, phone)
+		if pass == false {
+			fmt.Println("Username existed!")
+			return
+		} else {
+			if err != nil {
+				fmt.Println("Error! Please read error.log for detail")
+				return
+			} else {
+				fmt.Println("Successfully register!")
+			}
 		}
 	},
 }
@@ -49,5 +54,5 @@ func init() {
 	rCmd.Flags().StringP("username", "u", "", "username")
 	rCmd.Flags().StringP("password", "p", "", "password")
 	rCmd.Flags().StringP("email", "e", "", "email")
-	rCmd.Flags().StringP("phone", "p", "", "phone")
+	rCmd.Flags().StringP("cellphone", "c", "", "cellphone")
 }
