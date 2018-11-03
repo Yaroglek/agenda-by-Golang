@@ -23,18 +23,15 @@ import (
 // fuCmd represents the fu command
 var fuCmd = &cobra.Command{
 	Use:   "qu",
-	Short: "query user",
+	Short: "query users",
 	Run: func(cmd *cobra.Command, args []string) {
 		errLog.Println("Find User called")
-		if _, flag := service.GetCurUser(); flag != true {
-			fmt.Println("Error: please login")
-		}
 		ru := service.ListAllUser()
 		for _, u := range ru {
 			fmt.Println("----------------")
-			fmt.Println("Username: ", u.Name)
-			fmt.Println("Phone: ",u.Phone)
-			fmt.Println("Email: ",u.Email)
+			fmt.Println("Username:", u.Name)
+			fmt.Println("Phone:", u.Phone)
+			fmt.Println("Email:", u.Email)
 			fmt.Println("----------------")
 		}
 	},

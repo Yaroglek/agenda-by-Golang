@@ -31,7 +31,7 @@ var damCmd = &cobra.Command{
 		} else {
 			cm,flag := service.ClearMeeting(user.Name)
 			if flag == true {
-				fmt.Println("Successfully deleted ", cm," meeting(s)")
+				fmt.Println("Successfully deleted", cm, "meeting(s)")
 			} else {
 				fmt.Println("DeleteAllMeeting failed. Check error.log")
 			}

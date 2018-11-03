@@ -45,5 +45,5 @@ var dmCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(dmCmd)
-	dmCmd.Flags().StringP("title", "t","", "the title of meeting")
+	dmCmd.Flags().StringP("title", "t", "", "the title of meeting")
 }

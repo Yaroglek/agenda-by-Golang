@@ -34,7 +34,7 @@ func init()  {
 	meetinginfoPath = filepath.Join(logger.GoPath, meetinginfoPath)
 	curUserPath = filepath.Join(logger.GoPath, curUserPath)
 	if err := ReadFromFile(); err != nil {
-		errLog.Println("readFromFile fail: ", err)
+		errLog.Println("readFromFile fail:", err)
 	}
 }
 
@@ -220,7 +220,7 @@ func WriteToFile() error {
 func ReadUser() error {
 	file, err := os.Open(userinfoPath);
 	if err != nil {
-		errLog.Println("Open File Fail: ", userinfoPath, err)
+		errLog.Println("Open File Fail:", userinfoPath, err)
 		return err
 	}
 	defer file.Close()
@@ -230,7 +230,7 @@ func ReadUser() error {
 	case nil, io.EOF:
 		return nil
 	default:
-		errLog.Println("Decode User Fail: ", err)
+		errLog.Println("Decode User Fail:", err)
 		return err
 	}
 }
@@ -260,7 +260,7 @@ func WriteJSON(fpath string, data interface{}) error {
 	defer file.Close()
 	enc := json.NewEncoder(file)
 	if err := enc.Encode(&data); err != nil {
-		errLog.Println("writeJSON: ", err)
+		errLog.Println("writeJSON:", err)
 		return err
 	}
 	return nil
@@ -269,7 +269,7 @@ func WriteJSON(fpath string, data interface{}) error {
 func WriteString(path string, data *string) error {
 	file, err := os.Create(path)
 	if err != nil {
-		logger.Error.Println("Create file error: ", path)
+		logger.Error.Println("Create file error:", path)
 		return err
 	}
 	defer file.Close()

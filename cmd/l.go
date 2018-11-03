@@ -37,7 +37,7 @@ var lCmd = &cobra.Command{
 			return
 		}
 		if tf := service.UserLogin(username, password); tf == true {
-			fmt.Println("Login Successfully. Current User: ", username)
+			fmt.Println("Login Successfully. Current User:", username)
 		} else {
 			fmt.Println("Login fail: Wrong username or password")
 		}
@@ -48,5 +48,5 @@ var lCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lCmd)
 	lCmd.Flags().StringP("username", "u", "", "agenda username")
-	lCmd.Flags().StringP("password", "p","","agenda password")
+	lCmd.Flags().StringP("password", "p", "","agenda password")
 }
