@@ -31,7 +31,7 @@ var cmCmd = &cobra.Command{
 		starttime, _ := cmd.Flags().GetString("starttime")
 		endtime, _ := cmd.Flags().GetString("endtime")
 		if title == "" || len(participator) == 0 || starttime == "" || endtime == "" {
-			fmt.Println("Please input title, starttime[yyyy-mm-dd/hh:mm], endtime, user(s)(input like \"name1, name2\")")
+			fmt.Println("Please input title, starttime[yyyy-mm-dd/hh:mm], endtime, user(s)(input like \"name1,name2\")")
 			return
 		}
 		if user, flag := service.GetCurUser(); flag != true {
@@ -51,7 +51,7 @@ var cmCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(cmCmd)
 	cmCmd.Flags().StringP("title", "t", "", "the title of meeting")
-	cmCmd.Flags().StringSliceP("user", "u", nil, "the user(s) of the meeting, input like \"name1, name2\"")
+	cmCmd.Flags().StringSliceP("user", "u", nil, "the user(s) of the meeting, input like \"name1,name2\"")
 	cmCmd.Flags().StringP("starttime","s","","the startTime of the meeting")
 	cmCmd.Flags().StringP("endtime", "e", "", "the endTime of the meeting")
 }

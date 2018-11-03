@@ -26,16 +26,16 @@ var auCmd = &cobra.Command{
 	Short: "add a user to a meeting",
 	Run: func(cmd *cobra.Command, args []string) {
 		errLog.Println("Add User called")
-		tmp_p, _ := cmd.Flags().GetStringSlice("user")
-		tmp_t, _ := cmd.Flags().GetString("title")
-		if len(tmp_p) == 0 || tmp_t == "" {
-			fmt.Println("Please input title and user(s)(input like \"name1, name2\")")
+		users, _ := cmd.Flags().GetStringSlice("user")
+		title, _ := cmd.Flags().GetString("title")
+		if len(users) == 0 || title == "" {
+			fmt.Println("Please input title and user(s)(input like \"name1,name2\")")
 			return
 		}
 		if user, flag := service.GetCurUser(); flag != true {
 			fmt.Println("Error: please login")
 		} else {
-			flag := service.AddMeetingParticipator(user.Name, tmp_t, tmp_p)
+			flag := service.AddMeetingParticipator(user.Name, title, users)
 			if flag != true {
 				fmt.Println("Unexpected error. Check error.log for detail")
 			} else {
@@ -47,6 +47,6 @@ var auCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(auCmd)
-	auCmd.Flags().StringSliceP("user", "u", nil, "user(s) you want to add, input like \"name1, name2\"")
+	auCmd.Flags().StringSliceP("user", "u", nil, "user(s) you want to add, input like \"name1,name2\"")
 	auCmd.Flags().StringP("title", "t", "", "the title of meeting")
 }

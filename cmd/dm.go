@@ -34,7 +34,9 @@ var dmCmd = &cobra.Command{
 		if user,flag := service.GetCurUser(); flag != true {
 			fmt.Println("Error: please login")
 		} else {
-			if c := service.DeleteMeeting(user.Name, title); c == 0 {
+			if c, f := service.DeleteMeeting(user.Name, title); f == false {
+				return
+			} else if c == 0 {
 				fmt.Println("Error: Meeting not exist or you're not a Sponsor of it")
 			} else {
 				fmt.Println("Delete Successfully")

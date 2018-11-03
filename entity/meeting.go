@@ -28,6 +28,7 @@ func (meeting *Meeting) DeleteParticipator(username string) {
 	for i := 0; i < len(meeting.Participators); i++ {
 		if meeting.Participators[i] == username {
 			meeting.Participators = append(meeting.Participators[:i], meeting.Participators[i + 1 :]...)
+			break
 		}
 	}
 }

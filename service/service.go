@@ -207,13 +207,17 @@ func QueryMeeting(username, startTime, endTime string) ([]entity.Meeting,bool) {
 		}
 		return false
 	})
-	return tm,true
+	return tm, true
 }
 
-func DeleteMeeting(username, title string) int {
-	return entity.DeleteMeeting(func (m *entity.Meeting) bool {
+func DeleteMeeting(username, title string) (int, bool) {
+	i := entity.DeleteMeeting(func (m *entity.Meeting) bool {
 		return m.Sponsor == username && m.Title == title
 	})
+	if err := entity.Sync(); err != nil {
+		return 0, false
+	}
+	return i, true
 }
 
 func QuitMeeting(username string, title string) bool {
@@ -231,6 +235,9 @@ func QuitMeeting(username string, title string) bool {
 	entity.DeleteMeeting(func (m *entity.Meeting) bool {
 		return len(m.Participators) == 0
 	})
+	if err := entity.Sync(); err != nil {
+		return false
+	}
 	return true
 }
 
@@ -256,7 +263,7 @@ func AddMeetingParticipator(username string, title string, participators []strin
 			return false
 		}
 		qm := entity.QueryMeeting(func (m *entity.Meeting) bool {
-			return m.Sponsor == username && m.Title == title && m.IsParticipator(p)
+			return m.Sponsor == username && m.Title == title && (m.IsParticipator(p) || p == username)
 		})
 		if len(qm) != 0 {
 			ErrLog.Println("Add Meeting Participator:", p, "Already in meeting")

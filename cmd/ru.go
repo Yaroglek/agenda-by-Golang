@@ -29,7 +29,7 @@ var ruCmd = &cobra.Command{
 		title, _ := cmd.Flags().GetString("title")
 		users, _ := cmd.Flags().GetStringSlice("user")
 		if title == "" || len(users) == 0 {
-			fmt.Println("Please input title and user(s) (input like \"name1, name2\")")
+			fmt.Println("Please input title and user(s) (input like \"name1,name2\")")
 			return
 		}
 		if user, flag := service.GetCurUser(); flag != true {
@@ -48,5 +48,5 @@ var ruCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(ruCmd)
 	ruCmd.Flags().StringP("title", "t", "", "the title of the meeting")
-	ruCmd.Flags().StringSliceP("user", "u", nil, "the user(s) in a meeting, input like \"name1, name2\"")
+	ruCmd.Flags().StringSliceP("user", "u", nil, "the user(s) in a meeting, input like \"name1,name2\"")
 }
